@@ -27,19 +27,10 @@ class OuoBypasser:
 
     async def solve_captcha(self):
         _params = dict(pair.split('=') for pair in self.PARAMS.split('&'))
-        async with self.session.get(
-            self.BASE_URL + 'anchor',
-            params = self.PARAMS,
-            headers = self.headers
-        ) as resp:
+        async with self.session.get(f'{self.BASE_URL}anchor', params = self.PARAMS, headers = self.headers) as resp:
             c = re.findall(r'"recaptcha-token" value="(.*?)"', await resp.text())[0]
 
-        async with self.session.post(
-            self.BASE_URL + 'reload',
-            data = f'v={_params["v"]}&reason=q&c={c}&k={_params["k"]}&co={_params["co"]}',
-            params = f'k={_params["k"]}',
-            headers = self.headers
-        ) as resp:
+        async with self.session.post(f'{self.BASE_URL}reload', data = f'v={_params["v"]}&reason=q&c={c}&k={_params["k"]}&co={_params["co"]}', params = f'k={_params["k"]}', headers = self.headers) as resp:
             return re.findall(r'"rresp","(.*?)"', await resp.text())[0]
 
     async def bypass(self, url):
